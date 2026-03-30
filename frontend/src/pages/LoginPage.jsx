@@ -14,7 +14,7 @@ export default function LoginPage() {
       setAuthTokens(response.data)
       navigate('/')
     } catch (err) {
-      setError('Invalid credentials or server error.')
+      setError(err.response?.data?.error || 'Invalid credentials or server error.')
     }
   }
 

@@ -5,7 +5,14 @@ import { User, Agent } from '../models/index.js'
 
 dotenv.config()
 
-const createToken = (user) => jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
+const createToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    const error = new Error('Server auth configuration missing (JWT_SECRET).')
+    error.status = 500
+    throw error
+  }
+  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
+}
 
 export const register = async (req, res) => {
   try {
