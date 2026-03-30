@@ -1,7 +1,9 @@
 import { Notification, Agent, Farmer } from '../models/index.js'
+import { generateFarmerDueNotifications } from '../services/notificationService.js'
 
 export const listNotifications = async (req, res) => {
   try {
+    await generateFarmerDueNotifications()
     const query = {}
     if (req.user.role === 'agent' && req.user.agentProfile) {
       query.agentId = req.user.agentProfile.id
