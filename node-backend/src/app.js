@@ -33,6 +33,7 @@ app.use(cors({
     return callback(new Error('CORS origin not allowed'))
   },
   credentials: true,
+  optionsSuccessStatus: 200,
 }))
 app.use(express.json())
 
