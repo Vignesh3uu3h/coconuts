@@ -21,7 +21,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-        <h1 className="text-2xl font-bold mb-6">Login to Coconut Management</h1>
+        <h1 className="text-2xl font-bold mb-6">தேங்காய் வாடி உள்நுழைவு</h1>
         <p className="mb-4 text-sm text-slate-500">If you do not have an account, please register first.</p>
         {error && <div className="mb-4 rounded bg-red-100 px-4 py-3 text-sm text-red-700">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">

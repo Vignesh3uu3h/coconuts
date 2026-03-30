@@ -26,7 +26,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="border-b border-slate-200 bg-white p-4 flex items-center justify-between md:hidden">
-        <div className="text-lg font-semibold">Coconut Management</div>
+        <div className="text-lg font-semibold">தேங்காய் வாடி</div>
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
@@ -55,7 +55,7 @@ export default function Layout() {
               Close
             </button>
           </div>
-          <div className="text-xl font-semibold mb-6">Coconut Management</div>
+          <div className="text-xl font-semibold mb-6">தேங்காய் வாடி</div>
           <nav className="space-y-2">
             {navItems.map((item) => (
               <Link
