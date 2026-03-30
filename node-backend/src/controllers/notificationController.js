@@ -1,5 +1,5 @@
 import { Notification, Agent, Farmer } from '../models/index.js'
-import { generateFarmerDueNotificationsInBackground } from '../services/notificationService.js'
+import { generateFarmerDueNotifications, generateFarmerDueNotificationsInBackground } from '../services/notificationService.js'
 
 export const listNotifications = async (req, res) => {
   try {
@@ -18,6 +18,18 @@ export const listNotifications = async (req, res) => {
       limit: 100,
     })
     return res.json(notifications)
+  } catch (err) {
+    return res.status(500).json({ error: err.message })
+  }
+}
+
+export const runReminderNow = async (req, res) => {
+  try {
+    const result = await generateFarmerDueNotifications({ force: true })
+    return res.json({
+      message: 'Reminder run completed.',
+      ...result,
+    })
   } catch (err) {
     return res.status(500).json({ error: err.message })
   }

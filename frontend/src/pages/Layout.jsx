@@ -1,6 +1,6 @@
-﻿import { useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
-import { clearAuthTokens } from '../api'
+import api, { clearAuthTokens, getAccessToken } from '../api'
 
 const navItems = [
   { path: '/', label: 'Dashboard' },
@@ -16,9 +16,46 @@ const navItems = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showNotifyCard, setShowNotifyCard] = useState(false)
+  const [notificationCount, setNotificationCount] = useState(0)
+  const [notificationPreview, setNotificationPreview] = useState('')
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const token = getAccessToken()
+        if (!token) return
+
+        const seenKey = `notif_seen_${token.slice(-12)}`
+        const alreadySeen = sessionStorage.getItem(seenKey) === '1'
+
+        const res = await api.get('notifications/')
+        const list = Array.isArray(res.data) ? res.data : []
+        setNotificationCount(list.length)
+
+        if (list.length > 0) {
+          setNotificationPreview(list[0]?.message || 'You have new updates.')
+        }
+
+        if (list.length > 0 && !alreadySeen) {
+          setShowNotifyCard(true)
+          sessionStorage.setItem(seenKey, '1')
+        }
+      } catch {
+        setNotificationCount(0)
+      }
+    }
+
+    loadNotifications()
+  }, [])
 
   const logout = () => {
     clearAuthTokens()
+    try {
+      sessionStorage.clear()
+    } catch {
+      // ignore session storage cleanup errors
+    }
     window.location.replace('/login')
   }
 
@@ -69,7 +106,43 @@ export default function Layout() {
           </nav>
           <button onClick={logout} className="mt-8 w-full rounded bg-slate-900 px-3 py-2 text-white">Logout</button>
         </aside>
-        <main className="flex-1 p-8">
+        <main className="relative flex-1 p-8">
+          {showNotifyCard && (
+            <div className="fixed right-4 top-4 z-40 w-[92vw] max-w-sm rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-4 shadow-lg">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">New Notifications</p>
+                  <p className="mt-1 text-sm font-medium text-slate-900">
+                    You have {notificationCount} notification{notificationCount === 1 ? '' : 's'}.
+                  </p>
+                  <p className="mt-2 line-clamp-2 text-sm text-slate-600">{notificationPreview}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowNotifyCard(false)}
+                  className="rounded-md bg-white px-2 py-1 text-xs text-slate-600"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                <Link
+                  to="/notifications"
+                  onClick={() => setShowNotifyCard(false)}
+                  className="rounded-md bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
+                >
+                  View Notifications
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowNotifyCard(false)}
+                  className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-slate-700"
+                >
+                  Later
+                </button>
+              </div>
+            </div>
+          )}
           <Outlet />
         </main>
       </div>

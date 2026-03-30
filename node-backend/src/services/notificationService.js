@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { Op } from 'sequelize'
 import { Farmer, Notification, Agent } from '../models/index.js'
-import { sendMockMessage } from './messageService.js'
+import { sendReminderMessage } from './messageService.js'
 
 const CHECK_INTERVAL_MS = 5 * 60 * 1000
 let lastRunAt = 0
@@ -55,14 +55,16 @@ export const generateFarmerDueNotifications = async ({ force = false } = {}) => 
       status: 'pending',
     })
 
-    const sent = await sendMockMessage({
+    const sendResult = await sendReminderMessage({
       agent: farmer.assignedAgent,
       farmer,
       message,
     })
 
-    if (sent) {
+    if (sendResult.success) {
       await notification.update({ status: 'sent' })
+    } else {
+      console.error(`Reminder not sent for farmer ${farmer.id}: ${sendResult.error || 'unknown error'}`)
     }
 
     createdCount += 1
