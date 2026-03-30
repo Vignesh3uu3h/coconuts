@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -22,7 +22,7 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -33,4 +33,56 @@ body {
 
 button, input, select, textarea {
   font: inherit;
+}
+
+.login-screen {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 20%, #dcfce7 0%, #f8fafc 45%, #ecfeff 100%);
+}
+
+.login-glow {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.25), rgba(245, 158, 11, 0.22));
+  filter: blur(16px);
+  animation: floatGlow 4.8s ease-in-out infinite;
+}
+
+.login-card {
+  position: relative;
+  animation: loginEnter 520ms ease-out both;
+}
+
+@keyframes loginEnter {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes floatGlow {
+  0% {
+    transform: translate(-130px, -110px);
+  }
+  50% {
+    transform: translate(130px, 85px);
+  }
+  100% {
+    transform: translate(-130px, -110px);
+  }
+}
+
+@media (max-width: 640px) {
+  .login-glow {
+    width: 260px;
+    height: 260px;
+    filter: blur(12px);
+  }
 }

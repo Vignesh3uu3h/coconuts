@@ -1,33 +1,41 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api, { setAuthTokens } from '../api'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    setError('')
+    setLoading(true)
     try {
       const response = await api.post('auth/login/', form)
       const saved = setAuthTokens(response.data || {})
       if (!saved) {
         setError('Login response missing token. Please try again.')
+        setLoading(false)
         return
       }
       navigate('/', { replace: true })
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials or server error.')
+      setLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-        <h1 className="text-2xl font-bold mb-6">தேங்காய் வாடி உள்நுழைவு</h1>
-        <p className="mb-4 text-sm text-slate-500">If you do not have an account, please register first.</p>
+    <div className="login-screen flex min-h-screen items-center justify-center px-4">
+      <div className="login-glow" aria-hidden="true" />
+      <div className="login-card w-full max-w-md rounded-2xl border border-emerald-200/70 bg-white/95 p-8 shadow-xl backdrop-blur-sm">
+        <h1 className="mb-2 text-2xl font-bold text-emerald-900">தேங்காய் வாடி உள்நுழைவு</h1>
+        <p className="mb-4 text-sm text-slate-600">If you do not have an account, please register first.</p>
+
         {error && <div className="mb-4 rounded bg-red-100 px-4 py-3 text-sm text-red-700">{error}</div>}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Username</span>
@@ -49,10 +57,17 @@ export default function LoginPage() {
               required
             />
           </label>
-          <button className="w-full rounded bg-slate-900 px-4 py-2 text-white" type="submit">Login</button>
+          <button
+            className="w-full rounded bg-emerald-900 px-4 py-2 text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-70"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
+
         <div className="mt-4 text-center text-sm text-slate-600">
-          <Link to="/register" className="text-slate-900 font-semibold">Create an account</Link>
+          <Link to="/register" className="font-semibold text-emerald-900">Create an account</Link>
         </div>
       </div>
     </div>
