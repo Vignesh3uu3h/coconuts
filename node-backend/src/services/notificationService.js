@@ -3,6 +3,10 @@ import { Op } from 'sequelize'
 import { Farmer, Notification, Agent } from '../models/index.js'
 import { sendMockMessage } from './messageService.js'
 
+const CHECK_INTERVAL_MS = 5 * 60 * 1000
+let lastRunAt = 0
+let runningJob = null
+
 const buildReminderMessage = (farmer) => {
   const dueDate = farmer.nextSupplyDate || 'N/A'
   const village = farmer.village || 'N/A'
@@ -10,7 +14,17 @@ const buildReminderMessage = (farmer) => {
   return `Reminder: Farmer ${farmer.name} from ${village} is due for coconut supply on ${dueDate}. Contact: ${phone}.`
 }
 
-export const generateFarmerDueNotifications = async () => {
+export const generateFarmerDueNotifications = async ({ force = false } = {}) => {
+  const now = Date.now()
+  if (!force && now - lastRunAt < CHECK_INTERVAL_MS) {
+    return { createdCount: 0, checkedFarmers: 0, skipped: true }
+  }
+
+  if (runningJob) {
+    return runningJob
+  }
+
+  runningJob = (async () => {
   const today = dayjs().format('YYYY-MM-DD')
   const dueFarmers = await Farmer.findAll({
     where: {
@@ -54,5 +68,20 @@ export const generateFarmerDueNotifications = async () => {
     createdCount += 1
   }
 
-  return { createdCount, checkedFarmers: dueFarmers.length }
+    return { createdCount, checkedFarmers: dueFarmers.length, skipped: false }
+  })()
+
+  try {
+    const result = await runningJob
+    lastRunAt = Date.now()
+    return result
+  } finally {
+    runningJob = null
+  }
+}
+
+export const generateFarmerDueNotificationsInBackground = () => {
+  generateFarmerDueNotifications().catch((error) => {
+    console.error('Background reminder generation failed:', error.message)
+  })
 }

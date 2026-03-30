@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { User, Agent } from '../models/index.js'
-import { generateFarmerDueNotifications } from '../services/notificationService.js'
+import { generateFarmerDueNotificationsInBackground } from '../services/notificationService.js'
 
 dotenv.config()
 
@@ -41,9 +41,12 @@ export const login = async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Invalid credentials.' })
     const valid = await bcrypt.compare(password, user.password)
     if (!valid) return res.status(401).json({ error: 'Invalid credentials.' })
-    await generateFarmerDueNotifications()
     const token = createToken(user)
-    return res.json({ access: token, user: { id: user.id, username: user.username, role: user.role, phone: user.phone } })
+    res.json({ access: token, user: { id: user.id, username: user.username, role: user.role, phone: user.phone } })
+
+    // Run reminder generation in background so login response is fast.
+    generateFarmerDueNotificationsInBackground()
+    return
   } catch (err) {
     return res.status(500).json({ error: err.message })
   }

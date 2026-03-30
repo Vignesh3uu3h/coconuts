@@ -6,7 +6,16 @@ export const listPurchases = async (req, res) => {
     if (req.user.role === 'agent' && req.user.agentProfile) {
       query.agentId = req.user.agentProfile.id
     }
-    const purchases = await Purchase.findAll({ where: query, include: ['farmer', 'agent'] })
+    const purchases = await Purchase.findAll({
+      where: query,
+      attributes: ['id', 'date', 'numberOfCoconuts', 'pricePerCoconut', 'totalAmount', 'paymentStatus', 'notes', 'farmerId', 'agentId'],
+      include: [
+        { model: Farmer, as: 'farmer', attributes: ['id', 'name', 'village'] },
+        { model: Agent, as: 'agent', attributes: ['id', 'name', 'phone'] },
+      ],
+      order: [['date', 'DESC'], ['id', 'DESC']],
+      limit: 300,
+    })
     return res.json(purchases)
   } catch (err) {
     return res.status(500).json({ error: err.message })

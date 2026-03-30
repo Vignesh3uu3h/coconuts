@@ -13,7 +13,10 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET)
-    const user = await User.findByPk(payload.id, { include: [{ model: Agent, as: 'agentProfile' }] })
+    const user = await User.findByPk(payload.id, {
+      attributes: ['id', 'username', 'role', 'phone'],
+      include: [{ model: Agent, as: 'agentProfile', attributes: ['id'] }],
+    })
     if (!user) return res.status(401).json({ error: 'Invalid token.' })
     req.user = user
     next()

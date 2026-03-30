@@ -11,7 +11,12 @@ const getCurrentStock = async () => {
 
 export const listSales = async (req, res) => {
   try {
-    const sales = await Sale.findAll({ include: ['buyer'] })
+    const sales = await Sale.findAll({
+      attributes: ['id', 'date', 'coconutsSold', 'pricePerCoconut', 'totalAmount', 'paymentStatus', 'transportNotes', 'buyerId'],
+      include: [{ model: Buyer, as: 'buyer', attributes: ['id', 'businessName', 'phone', 'location'] }],
+      order: [['date', 'DESC'], ['id', 'DESC']],
+      limit: 300,
+    })
     return res.json(sales)
   } catch (err) {
     return res.status(500).json({ error: err.message })
