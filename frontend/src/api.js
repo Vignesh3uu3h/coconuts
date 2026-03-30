@@ -15,9 +15,16 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-export const setAuthTokens = ({ access, refresh }) => {
-  localStorage.setItem('access_token', access)
-  localStorage.setItem('refresh_token', refresh)
+export const setAuthTokens = ({ access, token, refresh }) => {
+  const accessToken = access || token
+  if (!accessToken) return false
+  localStorage.setItem('access_token', accessToken)
+  if (refresh) {
+    localStorage.setItem('refresh_token', refresh)
+  } else {
+    localStorage.removeItem('refresh_token')
+  }
+  return true
 }
 
 export const clearAuthTokens = () => {

@@ -17,8 +17,8 @@ const isAuthenticated = () => !!localStorage.getItem('access_token')
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={isAuthenticated() ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route path="/register" element={isAuthenticated() ? <Navigate to="/" replace /> : <RegisterPage />} />
       <Route path="/" element={isAuthenticated() ? <Layout /> : <Navigate to="/login" />}>
         <Route index element={<DashboardPage />} />
         <Route path="agents" element={<AgentsPage />} />

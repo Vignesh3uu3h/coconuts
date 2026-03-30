@@ -11,8 +11,12 @@ export default function LoginPage() {
     event.preventDefault()
     try {
       const response = await api.post('auth/login/', form)
-      setAuthTokens(response.data)
-      navigate('/')
+      const saved = setAuthTokens(response.data || {})
+      if (!saved) {
+        setError('Login response missing token. Please try again.')
+        return
+      }
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials or server error.')
     }
