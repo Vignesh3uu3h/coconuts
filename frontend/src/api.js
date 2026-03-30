@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: 'https://coconut-api-04l7.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
