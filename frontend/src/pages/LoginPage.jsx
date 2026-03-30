@@ -20,7 +20,9 @@ export default function LoginPage() {
         setLoading(false)
         return
       }
+      setLoading(false)
       navigate('/', { replace: true })
+      window.location.replace('/')
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials or server error.')
       setLoading(false)

@@ -11,8 +11,9 @@ import NotificationsPage from './pages/NotificationsPage'
 import ReportsPage from './pages/ReportsPage'
 import RegisterPage from './pages/RegisterPage'
 import Layout from './pages/Layout'
+import { getAccessToken } from './api'
 
-const isAuthenticated = () => !!localStorage.getItem('access_token')
+const isAuthenticated = () => !!getAccessToken()
 
 function App() {
   return (
