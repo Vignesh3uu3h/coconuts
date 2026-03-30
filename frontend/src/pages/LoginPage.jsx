@@ -12,6 +12,7 @@ export default function LoginPage() {
     event.preventDefault()
     setError('')
     setLoading(true)
+
     try {
       const response = await api.post('auth/login/', form)
       const saved = setAuthTokens(response.data || {})
@@ -20,9 +21,8 @@ export default function LoginPage() {
         setLoading(false)
         return
       }
-      setLoading(false)
+
       navigate('/', { replace: true })
-      window.location.replace('/')
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials or server error.')
       setLoading(false)
@@ -47,6 +47,7 @@ export default function LoginPage() {
               className="mt-1 w-full rounded border border-slate-300 p-2"
               type="text"
               required
+              autoComplete="username"
             />
           </label>
           <label className="block">
@@ -57,6 +58,7 @@ export default function LoginPage() {
               className="mt-1 w-full rounded border border-slate-300 p-2"
               type="password"
               required
+              autoComplete="current-password"
             />
           </label>
           <button

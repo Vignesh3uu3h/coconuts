@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+﻿import { Routes, Route, Navigate } from 'react-router-dom'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
 import AgentsPage from './pages/AgentsPage'
@@ -11,16 +11,23 @@ import NotificationsPage from './pages/NotificationsPage'
 import ReportsPage from './pages/ReportsPage'
 import RegisterPage from './pages/RegisterPage'
 import Layout from './pages/Layout'
-import { getAccessToken } from './api'
+import { isAuthenticated } from './api'
 
-const isAuthenticated = () => !!getAccessToken()
+function ProtectedRoute({ children }) {
+  return isAuthenticated() ? children : <Navigate to="/login" replace />
+}
+
+function GuestRoute({ children }) {
+  return isAuthenticated() ? <Navigate to="/" replace /> : children
+}
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={isAuthenticated() ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/register" element={isAuthenticated() ? <Navigate to="/" replace /> : <RegisterPage />} />
-      <Route path="/" element={isAuthenticated() ? <Layout /> : <Navigate to="/login" />}>
+      <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+      <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+
+      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<DashboardPage />} />
         <Route path="agents" element={<AgentsPage />} />
         <Route path="farmers" element={<FarmersPage />} />
@@ -31,6 +38,8 @@ function App() {
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="reports" element={<ReportsPage />} />
       </Route>
+
+      <Route path="*" element={<Navigate to={isAuthenticated() ? '/' : '/login'} replace />} />
     </Routes>
   )
 }

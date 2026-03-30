@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Outlet, Link, useNavigate } from 'react-router-dom'
+﻿import { useState } from 'react'
+import { Outlet, Link } from 'react-router-dom'
 import { clearAuthTokens } from '../api'
 
 const navItems = [
@@ -16,16 +16,15 @@ const navItems = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const navigate = useNavigate()
 
   const logout = () => {
     clearAuthTokens()
-    navigate('/login')
+    window.location.replace('/login')
   }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="border-b border-slate-200 bg-white p-4 flex items-center justify-between md:hidden">
+      <div className="flex items-center justify-between border-b border-slate-200 bg-white p-4 md:hidden">
         <div className="text-lg font-semibold">தேங்காய் வாடி</div>
         <button
           type="button"
@@ -44,8 +43,8 @@ export default function Layout() {
       )}
 
       <div className="flex">
-        <aside className={`fixed inset-y-0 left-0 z-30 w-72 overflow-y-auto bg-white border-r border-slate-200 p-6 transition-transform duration-300 md:static md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="flex items-center justify-between md:hidden mb-6">
+        <aside className={`fixed inset-y-0 left-0 z-30 w-72 overflow-y-auto border-r border-slate-200 bg-white p-6 transition-transform duration-300 md:static md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className="mb-6 flex items-center justify-between md:hidden">
             <div className="text-xl font-semibold">Menu</div>
             <button
               type="button"
@@ -55,7 +54,7 @@ export default function Layout() {
               Close
             </button>
           </div>
-          <div className="text-xl font-semibold mb-6">தேங்காய் வாடி</div>
+          <div className="mb-6 text-xl font-semibold">தேங்காய் வாடி</div>
           <nav className="space-y-2">
             {navItems.map((item) => (
               <Link
