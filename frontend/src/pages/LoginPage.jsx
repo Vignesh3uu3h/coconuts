@@ -33,7 +33,7 @@ export default function LoginPage() {
     <div className="login-screen flex min-h-screen items-center justify-center px-4">
       <div className="login-glow" aria-hidden="true" />
       <div className="login-card w-full max-w-md rounded-2xl border border-emerald-200/70 bg-white/95 p-8 shadow-xl backdrop-blur-sm">
-        <h1 className="mb-2 text-2xl font-bold text-emerald-900">தேங்காய் வாடி உள்நுழைவு</h1>
+        <h1 className="mb-2 text-2xl font-bold text-emerald-900">தேங்காய் வாடி </h1>
         <p className="mb-4 text-sm text-slate-600">If you do not have an account, please register first.</p>
 
         {error && <div className="mb-4 rounded bg-red-100 px-4 py-3 text-sm text-red-700">{error}</div>}
