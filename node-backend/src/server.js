@@ -6,6 +6,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const PORT = process.env.PORT || 8000
+const HOST = '0.0.0.0'
+const isProduction = process.env.NODE_ENV === 'production'
 
 const cleanupSqliteBackupTables = async () => {
   if (sequelize.getDialect() !== 'sqlite') return
@@ -24,10 +26,10 @@ const startServer = async () => {
   try {
     await sequelize.authenticate()
     await cleanupSqliteBackupTables()
-    await sequelize.sync({ alter: true })
+    await sequelize.sync(isProduction ? {} : { alter: true })
     console.log('Database synced successfully.')
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`)
+    app.listen(PORT, HOST, () => {
+      console.log(`Server running on http://${HOST}:${PORT}`)
     })
   } catch (error) {
     console.error('Unable to connect to the database:', error)

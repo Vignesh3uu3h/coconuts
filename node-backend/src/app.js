@@ -15,10 +15,23 @@ import notificationRoutes from './routes/notifications.js'
 dotenv.config()
 const app = express()
 
+const configuredOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((value) => value.trim()).filter(Boolean)
+  : []
+
+const defaultOrigins = ['http://localhost:3000', 'http://localhost:5173']
+const allowedOrigins = new Set([...defaultOrigins, ...configuredOrigins])
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',')
-    : ['http://localhost:3000', 'http://localhost:5173'],
+  origin: (origin, callback) => {
+    // Allow non-browser requests (server-to-server, curl, health checks).
+    if (!origin) return callback(null, true)
+
+    if (allowedOrigins.has(origin)) return callback(null, true)
+    if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) return callback(null, true)
+
+    return callback(new Error('CORS origin not allowed'))
+  },
   credentials: true,
 }))
 app.use(express.json())
