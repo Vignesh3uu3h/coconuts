@@ -3,6 +3,7 @@ import api from '../api'
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState(null)
+  const formatINR = (value) => `₹ ${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
   useEffect(() => {
     api.get('dashboard/summary/').then((res) => setSummary(res.data)).catch(() => setSummary(null))
@@ -16,7 +17,8 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 mb-6">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm uppercase tracking-wide text-slate-500">Today Purchases</p>
-          <p className="mt-4 text-3xl font-semibold">{summary ? summary.today_purchases : '...'}</p>
+          <p className="mt-4 text-3xl font-semibold">{summary ? formatINR(summary.today_purchases) : '...'}</p>
+          <p className="mt-2 text-sm text-slate-500">Qty: {summary ? summary.today_purchase_qty : '...'}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm uppercase tracking-wide text-slate-500">Today Sales</p>

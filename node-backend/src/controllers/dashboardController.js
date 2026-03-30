@@ -4,12 +4,14 @@ import dayjs from 'dayjs'
 export const dashboardSummary = async (req, res) => {
   try {
     const today = dayjs().format('YYYY-MM-DD')
-    const todayPurchases = await Purchase.sum('totalAmount', { where: { date: today } }) || 0
+    const todayPurchaseQty = await Purchase.sum('numberOfCoconuts', { where: { date: today } }) || 0
+    const todayPurchaseAmount = await Purchase.sum('totalAmount', { where: { date: today } }) || 0
     const todaySales = await Sale.sum('totalAmount', { where: { date: today } }) || 0
     const totalIn = await StockLedger.sum('quantity', { where: { type: 'IN' } }) || 0
     const totalOut = await StockLedger.sum('quantity', { where: { type: 'OUT' } }) || 0
     return res.json({
-      today_purchases: todayPurchases,
+      today_purchase_qty: todayPurchaseQty,
+      today_purchases: todayPurchaseAmount,
       today_sales: todaySales,
       current_stock: totalIn - totalOut,
     })
